@@ -11,6 +11,24 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+export async function generateMetadata({ params }: PageProps) {
+  const { id } = await params;
+  const data = await getRoastById(id);
+
+  if (!data || !data.roast) {
+    return {
+      title: "DevRoast - Roast Not Found",
+    };
+  }
+
+  return {
+    title: `DevRoast - Score: ${data.score}/10`,
+    other: {
+      "og:image": `/roast/${id}/opengraph`,
+    },
+  };
+}
+
 export default async function RoastResultPage({ params }: PageProps) {
   const { id } = await params;
 
