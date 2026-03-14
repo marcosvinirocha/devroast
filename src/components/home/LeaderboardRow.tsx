@@ -11,6 +11,26 @@ interface LeaderboardRowProps {
   score: number;
 }
 
+function ChevronIcon({ direction }: { direction: "up" | "down" }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="12"
+      height="12"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={direction === "up" ? "rotate-180" : ""}
+    >
+      <title>{direction === "up" ? "Collapse" : "Show more"}</title>
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
 export function LeaderboardRow({
   id,
   rank,
@@ -22,6 +42,7 @@ export function LeaderboardRow({
   const codeLines = code.split("\n");
   const previewLines = codeLines.slice(0, 3);
   const expandedLines = codeLines.slice(0, 8);
+  const hasMore = codeLines.length > 3;
 
   return (
     <CollapsiblePrimitive.Root open={isOpen} onOpenChange={setIsOpen}>
@@ -52,20 +73,23 @@ export function LeaderboardRow({
                   </span>
                 ))}
           </div>
-          <div className="flex items-center gap-3">
+          <div className="w-20 md:w-[100px] font-mono text-[12px] text-text-secondary">
+            {language}
+          </div>
+        </div>
+        {hasMore && (
+          <div className="flex justify-center pb-3">
             <CollapsiblePrimitive.Trigger asChild>
               <button
                 type="button"
-                className="font-mono text-[11px] text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
+                className="flex items-center gap-1 font-mono text-[11px] text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
               >
+                <ChevronIcon direction={isOpen ? "up" : "down"} />
                 {isOpen ? "collapse" : "show more"}
               </button>
             </CollapsiblePrimitive.Trigger>
-            <div className="w-20 md:w-[100px] font-mono text-[12px] text-text-secondary">
-              {language}
-            </div>
           </div>
-        </div>
+        )}
       </div>
     </CollapsiblePrimitive.Root>
   );
