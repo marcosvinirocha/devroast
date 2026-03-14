@@ -47,6 +47,7 @@ export const appRouter = createTRPCRouter({
           code: submissions.code,
           language: submissions.language,
           score: submissions.score,
+          createdAt: submissions.createdAt,
         })
         .from(submissions)
         .where(eq(submissions.status, "completed"))
@@ -62,12 +63,53 @@ export const appRouter = createTRPCRouter({
             codeHtml: html,
             language: item.language,
             score: item.score ?? 0,
+            createdAt: item.createdAt.toISOString(),
           };
         }),
       );
 
       return items;
     }),
+    getAll: baseProcedure
+      .input(
+        z.object({
+          limit: z.number().min(1).max(100).default(20),
+        }),
+      )
+      .query(async ({ input }) => {
+        const { db } = await import("@/db");
+        const { codeToHtml } = await import("@/lib/shiki");
+
+        const result = await db
+          .select({
+            id: submissions.id,
+            code: submissions.code,
+            language: submissions.language,
+            score: submissions.score,
+            createdAt: submissions.createdAt,
+          })
+          .from(submissions)
+          .where(eq(submissions.status, "completed"))
+          .orderBy(asc(submissions.score))
+          .limit(input.limit);
+
+        const items = await Promise.all(
+          result.map(async (item, idx) => {
+            const html = await codeToHtml(item.code, item.language);
+            return {
+              id: item.id,
+              rank: idx + 1,
+              code: item.code,
+              codeHtml: html,
+              language: item.language,
+              score: item.score ?? 0,
+              createdAt: item.createdAt.toISOString(),
+            };
+          }),
+        );
+
+        return items;
+      }),
   }),
 });
 
