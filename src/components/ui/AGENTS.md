@@ -272,7 +272,62 @@ export async function CodeBlockServer({
 }
 ```
 
-### 11. Biome/Lint
+### 11. AnimatedNumber
+
+Para criar efeitos de animação de números (ex: counter de zero até valor final):
+
+```tsx
+'use client';
+
+import { useEffect, useState } from 'react';
+
+interface AnimatedNumberProps {
+  value: number;
+  decimals?: number;
+}
+
+export function AnimatedNumber({ value, decimals = 0 }: AnimatedNumberProps) {
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    const duration = 1000;
+    const steps = 30;
+    const increment = value / steps;
+    let current = 0;
+    let step = 0;
+
+    const timer = setInterval(() => {
+      step++;
+      current = Math.min(current + increment, value);
+      setDisplayValue(Number(current.toFixed(decimals)));
+
+      if (step >= steps) {
+        clearInterval(timer);
+        setDisplayValue(value);
+      }
+    }, duration / steps);
+
+    return () => clearInterval(timer);
+  }, [value, decimals]);
+
+  return (
+    <span>
+      {displayValue.toLocaleString(undefined, {
+        minimumFractionDigits: decimals,
+        maximumFractionDigits: decimals,
+      })}
+    </span>
+  );
+}
+```
+
+**Uso:**
+```tsx
+<AnimatedNumber value={stats.data.totalRoasts} />
+<AnimatedNumber value={stats.data.avgScore} decimals={1} />
+```
+
+### 12. Biome/Lint
 
 Antes de commit/push, rodar:
 
@@ -286,7 +341,7 @@ Corrigir erros automaticamente:
 npx biome check --write
 ```
 
-### 12. forwardRef e displayName
+### 13. forwardRef e displayName
 
 Sempre usar `forwardRef` para permitir ref forwarding e definir `displayName`.
 
