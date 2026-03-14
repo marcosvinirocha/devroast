@@ -1,12 +1,14 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { CodeEditor } from "@/components/code-editor";
 import { Leaderboard } from "@/components/home/Leaderboard";
 import { Metrics } from "@/components/home/Metrics";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
+import { trpc } from "@/trpc";
 
 const sampleCode = `function calculateTotal(items) {
   var total = 0;
@@ -21,9 +23,33 @@ const sampleCode = `function calculateTotal(items) {
 }`;
 
 export default function Home() {
+  const router = useRouter();
   const [code, setCode] = useState(sampleCode);
   const [limitExceeded, setLimitExceeded] = useState(false);
+  const [isRoastMode, setIsRoastMode] = useState(false);
+
+  const createMutation = trpc.submissions.create.useMutation({
+    onSuccess: (data) => {
+      router.push(`/roast/${data.id}`);
+    },
+    onError: (error) => {
+      console.error("Failed to create roast:", error);
+      alert("Failed to create roast. Please try again.");
+    },
+  });
+
   const hasCode = code.trim().length > 0 && !limitExceeded;
+  const isSubmitting = createMutation.isPending;
+
+  const handleSubmit = () => {
+    if (!hasCode || isSubmitting) return;
+
+    createMutation.mutate({
+      code,
+      language: "javascript",
+      roastMode: isRoastMode ? "brutal" : "balanced",
+    });
+  };
 
   return (
     <div className="min-h-screen bg-bg-page">
@@ -56,9 +82,17 @@ export default function Home() {
         </section>
 
         <section className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 max-w-[780px]">
-          <Toggle label="roast mode" />
-          <Button variant="default" disabled={!hasCode}>
-            $ roast_my_code
+          <Toggle
+            label={isRoastMode ? "roast mode (brutal)" : "roast mode"}
+            checked={isRoastMode}
+            onCheckedChange={(checked) => setIsRoastMode(checked)}
+          />
+          <Button
+            variant="default"
+            disabled={!hasCode || isSubmitting}
+            onClick={handleSubmit}
+          >
+            {isSubmitting ? "processing..." : "$ roast_my_code"}
           </Button>
         </section>
 
