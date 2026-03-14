@@ -5,6 +5,11 @@ import { LeaderboardSkeleton } from "./LeaderboardSkeleton";
 
 function LeaderboardFetcher() {
   const { data: leaderboardData } = trpc.leaderboard.getShameTop3.useQuery();
+  const { data: metrics } = trpc.metrics.getRoastStats.useQuery({
+    status: "completed",
+  });
+
+  const total = metrics?.totalRoasts ?? 0;
 
   if (!leaderboardData || leaderboardData.length === 0) {
     return (
@@ -77,6 +82,15 @@ function LeaderboardFetcher() {
             </div>
           </Link>
         ))}
+      </div>
+      <div className="flex justify-center py-4 text-[12px] font-mono text-text-tertiary">
+        showing top 3 of {total.toLocaleString()} ·{" "}
+        <Link
+          href="/leaderboard"
+          className="hover:text-text-primary transition-colors"
+        >
+          view full leaderboard &gt;&gt;
+        </Link>
       </div>
     </>
   );

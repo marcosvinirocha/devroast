@@ -69,21 +69,13 @@ export default function Home() {
         <section className="h-10 md:h-[60px]" />
 
         <section className="flex flex-col gap-4 md:gap-6 w-full">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-[14px] font-bold font-mono text-accent-green">
-                {"//"}
-              </span>
-              <span className="text-[14px] font-bold font-mono text-text-primary">
-                shame_leaderboard
-              </span>
-            </div>
-            <Link
-              href="/leaderboard"
-              className="text-[12px] font-mono text-text-secondary enabled:hover:text-text-primary transition-colors cursor-pointer border border-border-primary bg-transparent px-3 py-1.5"
-            >
-              $ view_all &gt;&gt;
-            </Link>
+          <div className="flex items-center gap-2">
+            <span className="text-[14px] font-bold font-mono text-accent-green">
+              {"//"}
+            </span>
+            <span className="text-[14px] font-bold font-mono text-text-primary">
+              shame_leaderboard
+            </span>
           </div>
 
           <span className="text-[13px] font-mono text-text-tertiary">
