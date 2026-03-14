@@ -50,8 +50,10 @@ export interface CodeEditorProps {
   value?: string;
   language?: string;
   readOnly?: boolean;
+  maxLength?: number;
   onLanguageDetected?: (language: string) => void;
   onChange?: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
+  onLimitExceeded?: (exceeded: boolean) => void;
   className?: string;
   children?: React.ReactNode;
 }
@@ -144,6 +146,52 @@ export const CodeEditorBody = forwardRef<HTMLDivElement, CodeEditorBodyProps>(
   },
 );
 CodeEditorBody.displayName = "CodeEditorBody";
+
+const codeEditorFooterVariants = tv({
+  base: "flex items-center justify-end px-3 md:px-4 py-1.5 md:py-2 border-t border-border-primary bg-bg-surface rounded-b-md",
+});
+
+export interface CodeEditorFooterProps extends HTMLAttributes<HTMLDivElement> {
+  currentLength: number;
+  maxLength: number;
+}
+
+export const CodeEditorFooter = forwardRef<
+  HTMLDivElement,
+  CodeEditorFooterProps
+>(({ className, currentLength, maxLength, ...props }, ref) => {
+  const isExceeded = currentLength > maxLength;
+
+  return (
+    <div
+      ref={ref}
+      className={codeEditorFooterVariants({ className })}
+      {...props}
+    >
+      <span
+        className={tv({
+          base: "font-mono text-[10px] md:text-[11px]",
+          variants: {
+            color: {
+              normal: "text-text-tertiary",
+              warning: "text-accent-amber",
+              error: "text-accent-red",
+            },
+          },
+        })({
+          color: isExceeded
+            ? "error"
+            : currentLength > maxLength * 0.9
+              ? "warning"
+              : "normal",
+        })}
+      >
+        {currentLength.toLocaleString()} / {maxLength.toLocaleString()}
+      </span>
+    </div>
+  );
+});
+CodeEditorFooter.displayName = "CodeEditorFooter";
 
 const codeEditorLineNumbersVariants = tv({
   base: "flex flex-col gap-1.5 py-2 md:py-3 pr-2 md:pr-3 pl-3 md:pl-4 border-r border-border-primary text-right font-mono text-[11px] md:text-[12px] text-text-tertiary min-w-8 md:min-w-12 overflow-hidden",
@@ -271,8 +319,10 @@ export const CodeEditor = forwardRef<HTMLDivElement, CodeEditorProps>(
       className,
       language: fixedLanguage,
       readOnly = false,
+      maxLength = 2000,
       onLanguageDetected,
       onChange,
+      onLimitExceeded,
       ...props
     },
     ref,
@@ -299,6 +349,10 @@ export const CodeEditor = forwardRef<HTMLDivElement, CodeEditorProps>(
     useEffect(() => {
       setSelectedLanguage(fixedLanguage || "auto-detect");
     }, [fixedLanguage]);
+
+    useEffect(() => {
+      onLimitExceeded?.(code.length > maxLength);
+    }, [code.length, maxLength, onLimitExceeded]);
 
     useEffect(() => {
       if (code.trim().length === 0) {
@@ -371,6 +425,9 @@ export const CodeEditor = forwardRef<HTMLDivElement, CodeEditorProps>(
             <SyntaxHighlightedContent code={code} language={activeLanguage} />
           )}
         </CodeEditorBody>
+        {!readOnly && (
+          <CodeEditorFooter currentLength={code.length} maxLength={maxLength} />
+        )}
       </CodeEditorRoot>
     );
   },

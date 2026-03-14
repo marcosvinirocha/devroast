@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { CodeEditor } from "@/components/code-editor";
 import { Button } from "@/components/ui/button";
@@ -84,7 +85,8 @@ function LeaderboardRow({
 
 export default function Home() {
   const [code, setCode] = useState(sampleCode);
-  const hasCode = code.trim().length > 0;
+  const [limitExceeded, setLimitExceeded] = useState(false);
+  const hasCode = code.trim().length > 0 && !limitExceeded;
 
   return (
     <div className="min-h-screen bg-bg-page">
@@ -111,6 +113,7 @@ export default function Home() {
           <CodeEditor
             value={code}
             onChange={(e) => setCode(e.target.value)}
+            onLimitExceeded={(exceeded) => setLimitExceeded(exceeded)}
             className="w-full max-w-[780px]"
           />
         </section>
@@ -140,12 +143,12 @@ export default function Home() {
                 shame_leaderboard
               </span>
             </div>
-            <a
+            <Link
               href="/leaderboard"
               className="text-[12px] font-mono text-text-secondary enabled:hover:text-text-primary transition-colors cursor-pointer border border-border-primary bg-transparent px-3 py-1.5"
             >
               $ view_all &gt;&gt;
-            </a>
+            </Link>
           </div>
 
           <span className="text-[13px] font-mono text-text-tertiary">
@@ -174,7 +177,13 @@ export default function Home() {
           </div>
 
           <div className="flex justify-center py-4 text-[12px] font-mono text-text-tertiary">
-            showing top 3 of 2,847 · view full leaderboard &gt;&gt;
+            showing top 3 of 2,847 ·{" "}
+            <Link
+              href="/leaderboard"
+              className="hover:text-text-primary transition-colors"
+            >
+              view full leaderboard &gt;&gt;
+            </Link>
           </div>
         </section>
 
