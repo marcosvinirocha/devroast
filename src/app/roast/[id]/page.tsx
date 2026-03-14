@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CodeBlockServer } from "@/components/ui/code-block-server";
 import { DiffLine } from "@/components/ui/diff-line";
 import { ScoreRing } from "@/components/ui/score-ring";
+import { ShareButton } from "@/components/ui/share-button";
 import { getRoastById } from "@/lib/roast";
 
 interface PageProps {
@@ -117,9 +118,7 @@ export default async function RoastResultPage({ params }: PageProps) {
               <span>{codeLines} lines</span>
             </div>
             <div className="flex gap-3">
-              <Button variant="secondary" size="sm" disabled>
-                share (coming soon)
-              </Button>
+              <ShareButton id={id} score={score} />
             </div>
           </div>
         </div>
