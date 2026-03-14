@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import { trpc } from "@/trpc";
+import { LeaderboardRow } from "./LeaderboardRow";
 import { LeaderboardSkeleton } from "./LeaderboardSkeleton";
 
 function LeaderboardFetcher() {
@@ -55,32 +56,14 @@ function LeaderboardFetcher() {
           </div>
         </div>
         {leaderboardData.map((item, idx) => (
-          <Link key={item.id} href={`/roast/${item.id}`} className="block">
-            <div className="flex items-center gap-4 md:gap-6 px-4 md:px-5 py-4 border-b border-border-primary hover:bg-bg-surface transition-colors cursor-pointer">
-              <div className="w-10 md:w-[50px] font-mono text-[12px] text-text-tertiary">
-                {idx + 1}
-              </div>
-              <div className="w-14 md:w-[70px] font-mono text-[12px] font-bold text-accent-red">
-                {item.score ?? 0}
-              </div>
-              <div className="flex-1 flex flex-col gap-0.5 overflow-hidden">
-                {item.code
-                  .split("\n")
-                  .slice(0, 2)
-                  .map((line) => (
-                    <span
-                      key={line.slice(0, 15)}
-                      className="font-mono text-[12px] text-text-primary truncate"
-                    >
-                      {line}
-                    </span>
-                  ))}
-              </div>
-              <div className="w-20 md:w-[100px] font-mono text-[12px] text-text-secondary">
-                {item.language}
-              </div>
-            </div>
-          </Link>
+          <LeaderboardRow
+            key={item.id}
+            id={item.id}
+            rank={idx + 1}
+            code={item.code}
+            language={item.language}
+            score={item.score ?? 0}
+          />
         ))}
       </div>
       <div className="flex justify-center py-4 text-[12px] font-mono text-text-tertiary">
