@@ -127,7 +127,11 @@ export default function LeaderboardPage() {
                   <Badge variant="critical">{entry.score.toFixed(1)}/10</Badge>
                 </div>
               </div>
-              <CodeBlockServer code={entry.code} language={entry.language} />
+              <CodeBlockServer
+                code={entry.code}
+                language={entry.language}
+                showHeader={false}
+              />
             </div>
           ))}
         </div>

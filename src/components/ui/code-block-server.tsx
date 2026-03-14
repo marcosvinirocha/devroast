@@ -34,6 +34,7 @@ export interface CodeBlockServerProps {
   language?: string;
   fileName?: string;
   showLineNumbers?: boolean;
+  showHeader?: boolean;
   className?: string;
 }
 
@@ -42,6 +43,7 @@ export async function CodeBlockServer({
   language = "javascript",
   fileName,
   showLineNumbers = true,
+  showHeader = true,
   className,
 }: CodeBlockServerProps) {
   const html = await codeToHtml(code, language);
@@ -49,11 +51,13 @@ export async function CodeBlockServer({
 
   return (
     <div className={codeBlockVariants({ className })}>
-      <CodeHeader fileName={fileName}>
-        <span className={dotVariants({ color: "red" })} />
-        <span className={dotVariants({ color: "amber" })} />
-        <span className={dotVariants({ color: "green" })} />
-      </CodeHeader>
+      {showHeader && (
+        <CodeHeader fileName={fileName}>
+          <span className={dotVariants({ color: "red" })} />
+          <span className={dotVariants({ color: "amber" })} />
+          <span className={dotVariants({ color: "green" })} />
+        </CodeHeader>
+      )}
       <div className={codeBodyVariants()}>
         {showLineNumbers && (
           <div className={lineNumbersVariants()}>
