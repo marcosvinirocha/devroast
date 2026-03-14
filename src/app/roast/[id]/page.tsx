@@ -118,7 +118,7 @@ export default async function RoastResultPage({ params }: PageProps) {
               <span>{codeLines} lines</span>
             </div>
             <div className="flex gap-3">
-              <ShareButton id={id} score={score} />
+              <ShareButton id={id} />
             </div>
           </div>
         </div>
