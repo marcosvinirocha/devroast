@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { CodeEditor } from "@/components/code-editor";
+import { Metrics } from "@/components/home/Metrics";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
 
@@ -125,10 +126,8 @@ export default function Home() {
           </Button>
         </section>
 
-        <section className="flex items-center justify-center gap-4 md:gap-6 text-[11px] md:text-[12px] font-mono text-text-tertiary">
-          <span>2,847 codes roasted</span>
-          <span>·</span>
-          <span>avg score: 4.2/10</span>
+        <section>
+          <Metrics />
         </section>
 
         <section className="h-10 md:h-[60px]" />
