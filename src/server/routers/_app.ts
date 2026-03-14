@@ -39,6 +39,7 @@ export const appRouter = createTRPCRouter({
   leaderboard: createTRPCRouter({
     getShameTop3: baseProcedure.query(async () => {
       const { db } = await import("@/db");
+      const { codeToHtml } = await import("@/lib/shiki");
 
       const result = await db
         .select({
@@ -52,7 +53,20 @@ export const appRouter = createTRPCRouter({
         .orderBy(asc(submissions.score))
         .limit(3);
 
-      return result;
+      const items = await Promise.all(
+        result.map(async (item) => {
+          const html = await codeToHtml(item.code, item.language);
+          return {
+            id: item.id,
+            code: item.code,
+            codeHtml: html,
+            language: item.language,
+            score: item.score ?? 0,
+          };
+        }),
+      );
+
+      return items;
     }),
   }),
 });

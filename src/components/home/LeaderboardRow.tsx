@@ -7,6 +7,7 @@ interface LeaderboardRowProps {
   id: string;
   rank: number;
   code: string;
+  codeHtml: string;
   language: string;
   score: number;
 }
@@ -35,6 +36,7 @@ export function LeaderboardRow({
   id,
   rank,
   code,
+  codeHtml,
   language,
   score,
 }: LeaderboardRowProps) {
@@ -54,21 +56,15 @@ export function LeaderboardRow({
           <div className="w-14 md:w-[70px] font-mono text-[12px] font-bold text-accent-red">
             {score}
           </div>
-          <div className="flex-1 flex flex-col gap-0.5 overflow-hidden">
+          <div className="flex-1 flex flex-col gap-0.5 overflow-hidden font-mono text-[12px] text-text-primary">
             {isOpen
               ? expandedLines.map((line) => (
-                  <span
-                    key={line.slice(0, 15)}
-                    className="font-mono text-[12px] text-text-primary truncate"
-                  >
+                  <span key={line.slice(0, 15)} className="truncate">
                     {line}
                   </span>
                 ))
               : previewLines.map((line) => (
-                  <span
-                    key={line.slice(0, 15)}
-                    className="font-mono text-[12px] text-text-primary truncate"
-                  >
+                  <span key={line.slice(0, 15)} className="truncate">
                     {line}
                   </span>
                 ))}
@@ -78,17 +74,26 @@ export function LeaderboardRow({
           </div>
         </div>
         {hasMore && (
-          <div className="flex justify-center pb-3">
+          <>
             <CollapsiblePrimitive.Trigger asChild>
-              <button
-                type="button"
-                className="flex items-center gap-1 font-mono text-[11px] text-text-secondary hover:text-text-primary transition-colors cursor-pointer"
-              >
-                <ChevronIcon direction={isOpen ? "up" : "down"} />
-                {isOpen ? "collapse" : "show more"}
-              </button>
+              <div className="flex justify-center pb-3 cursor-pointer">
+                <button
+                  type="button"
+                  className="flex items-center gap-1 font-mono text-[11px] text-text-secondary hover:text-text-primary transition-colors"
+                >
+                  <ChevronIcon direction={isOpen ? "up" : "down"} />
+                  {isOpen ? "collapse" : "show more"}
+                </button>
+              </div>
             </CollapsiblePrimitive.Trigger>
-          </div>
+            <CollapsiblePrimitive.Content>
+              <div
+                className="px-4 md:px-5 pb-4 bg-bg-input font-mono text-[12px]"
+                /* biome-ignore lint/security/noDangerouslySetInnerHtml: Shiki generates safe HTML */
+                dangerouslySetInnerHTML={{ __html: codeHtml }}
+              />
+            </CollapsiblePrimitive.Content>
+          </>
         )}
       </div>
     </CollapsiblePrimitive.Root>

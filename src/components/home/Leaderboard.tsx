@@ -14,27 +14,25 @@ function LeaderboardFetcher() {
 
   if (!leaderboardData || leaderboardData.length === 0) {
     return (
-      <>
-        <div className="border border-border-primary overflow-x-auto">
-          <div className="flex items-center px-4 md:px-5 py-3 bg-bg-surface border-b border-border-primary min-w-[500px]">
-            <div className="w-10 md:w-[50px] text-[12px] font-mono font-medium text-text-tertiary">
-              #
-            </div>
-            <div className="w-14 md:w-[70px] text-[12px] font-mono font-medium text-text-tertiary">
-              score
-            </div>
-            <div className="flex-1 text-[12px] font-mono font-medium text-text-tertiary">
-              code
-            </div>
-            <div className="w-20 md:w-[100px] text-[12px] font-mono font-medium text-text-tertiary">
-              lang
-            </div>
+      <div className="border border-border-primary overflow-x-auto">
+        <div className="flex items-center px-4 md:px-5 py-3 bg-bg-surface border-b border-border-primary min-w-[500px]">
+          <div className="w-10 md:w-[50px] text-[12px] font-mono font-medium text-text-tertiary">
+            #
           </div>
-          <div className="flex items-center justify-center py-8 text-[12px] font-mono text-text-tertiary">
-            No roasts yet. Be the first!
+          <div className="w-14 md:w-[70px] text-[12px] font-mono font-medium text-text-tertiary">
+            score
+          </div>
+          <div className="flex-1 text-[12px] font-mono font-medium text-text-tertiary">
+            code
+          </div>
+          <div className="w-20 md:w-[100px] text-[12px] font-mono font-medium text-text-tertiary">
+            lang
           </div>
         </div>
-      </>
+        <div className="flex items-center justify-center py-8 text-[12px] font-mono text-text-tertiary">
+          No roasts yet. Be the first!
+        </div>
+      </div>
     );
   }
 
@@ -61,8 +59,9 @@ function LeaderboardFetcher() {
             id={item.id}
             rank={idx + 1}
             code={item.code}
+            codeHtml={item.codeHtml ?? ""}
             language={item.language}
-            score={item.score ?? 0}
+            score={item.score}
           />
         ))}
       </div>
