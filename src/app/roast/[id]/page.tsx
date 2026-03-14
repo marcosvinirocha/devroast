@@ -1,90 +1,57 @@
-"use client";
-
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { notFound } from "next/navigation";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CodeBlockServer } from "@/components/ui/code-block-server";
 import { DiffLine } from "@/components/ui/diff-line";
 import { ScoreRing } from "@/components/ui/score-ring";
-import { trpc } from "@/trpc";
+import { getRoastById } from "@/lib/roast";
 
-function LoadingState() {
-  return (
-    <div className="min-h-screen bg-bg-page">
-      <div className="max-w-5xl mx-auto px-5 py-10 flex flex-col gap-10">
-        <div className="flex items-center justify-between">
-          <div className="h-7 w-32 bg-bg-surface animate-pulse rounded" />
-          <div className="h-5 w-24 bg-bg-surface animate-pulse rounded" />
-        </div>
-        <div className="flex items-center gap-12">
-          <div className="w-[140px] h-[140px] rounded-full bg-bg-surface animate-pulse" />
-          <div className="flex-1 flex flex-col gap-4">
-            <div className="h-6 w-32 bg-bg-surface animate-pulse rounded" />
-            <div className="h-8 w-3/4 bg-bg-surface animate-pulse rounded" />
-            <div className="h-4 w-48 bg-bg-surface animate-pulse rounded" />
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function RoastResultPage({ params }: PageProps) {
+  const { id } = await params;
+
+  const data = await getRoastById(id);
+
+  if (!data) {
+    notFound();
+  }
+
+  if (!data.roast) {
+    return (
+      <div className="min-h-screen bg-bg-page">
+        <div className="max-w-5xl mx-auto px-5 py-10 flex flex-col gap-10">
+          <div className="flex items-center justify-between">
+            <Link href="/" className="flex items-center gap-2">
+              <span className="text-[20px] font-bold text-accent-green">
+                {">"}
+              </span>
+              <span className="text-[18px] font-medium text-text-primary">
+                devroast
+              </span>
+            </Link>
+          </div>
+          <div className="flex flex-col items-center justify-center py-20 gap-4">
+            <span className="text-[20px] font-mono text-accent-red">
+              Roast not found
+            </span>
+            <Link href="/">
+              <Button variant="secondary">Go Home</Button>
+            </Link>
           </div>
         </div>
       </div>
-    </div>
-  );
-}
-
-function ErrorState({ error }: { error: string }) {
-  return (
-    <div className="min-h-screen bg-bg-page">
-      <div className="max-w-5xl mx-auto px-5 py-10 flex flex-col gap-10">
-        <div className="flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <span className="text-[20px] font-bold text-accent-green">
-              {">"}
-            </span>
-            <span className="text-[18px] font-medium text-text-primary">
-              devroast
-            </span>
-          </Link>
-        </div>
-        <div className="flex flex-col items-center justify-center py-20 gap-4">
-          <span className="text-[20px] font-mono text-accent-red">
-            Error: {error}
-          </span>
-          <Link href="/">
-            <Button variant="secondary">Go Home</Button>
-          </Link>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default function RoastResultPage() {
-  const params = useParams();
-  const id = params?.id as string;
-
-  const { data, isLoading, error } = trpc.submissions.getById.useQuery({ id });
-
-  if (isLoading) {
-    return <LoadingState />;
+    );
   }
 
-  if (error || !data) {
-    return <ErrorState error={error?.message || "Submission not found"} />;
-  }
-
-  const { code, codeHtml, language, score, roast, createdAt } = data;
-
-  if (!roast) {
-    return <ErrorState error="Roast not found for this submission" />;
-  }
-
+  const { code, language, score, roast } = data;
   const codeLines = code.split("\n").length;
   const suggestedFixLines = roast.suggestedFix?.split("\n") || [];
 
-  const diffLines: Array<{
-    type: "context" | "added";
-    prefix: string;
-    content: string;
-  }> = roast.suggestedFix
+  const diffLines = roast.suggestedFix
     ? suggestedFixLines.map((line: string) => {
         const originalLine = code
           .split("\n")
@@ -168,14 +135,11 @@ export default function RoastResultPage() {
           {roast.issues && roast.issues.length > 0 ? (
             <div className="grid grid-cols-2 gap-5">
               {roast.issues.map(
-                (
-                  issue: {
-                    title: string;
-                    description: string;
-                    severity: string;
-                  },
-                  idx: number,
-                ) => (
+                (issue: {
+                  title: string;
+                  description: string;
+                  severity: string;
+                }) => (
                   <div
                     key={issue.title}
                     className="flex flex-col gap-3 p-5 border border-border-primary bg-bg-surface"
@@ -231,14 +195,11 @@ export default function RoastResultPage() {
               </div>
               <div className="flex flex-col">
                 {diffLines.map(
-                  (
-                    line: {
-                      type: "context" | "added";
-                      prefix: string;
-                      content: string;
-                    },
-                    idx: number,
-                  ) => (
+                  (line: {
+                    type: "context" | "added";
+                    prefix: string;
+                    content: string;
+                  }) => (
                     <DiffLine
                       key={line.content.slice(0, 15)}
                       type={line.type}

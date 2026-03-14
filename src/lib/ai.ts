@@ -105,7 +105,7 @@ export async function generateRoast(
       "X-Title": "DevRoast",
     },
     body: JSON.stringify({
-      model: "nvidia/nemotron-3-super-120b-a12b:free",
+      model: "z-ai/glm-4.5-air:free",
       messages,
       temperature: 0.7,
       max_tokens: 2000,
