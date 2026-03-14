@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { CodeEditor } from "@/components/code-editor";
+import { Leaderboard } from "@/components/home/Leaderboard";
 import { Metrics } from "@/components/home/Metrics";
 import { Button } from "@/components/ui/button";
 import { Toggle } from "@/components/ui/toggle";
@@ -18,71 +19,6 @@ const sampleCode = `function calculateTotal(items) {
 // TODO: handle tax calculation
 // TODO: handle currency conversion
 }`;
-
-const leaderboardData = [
-  {
-    rank: 1,
-    score: "1.2",
-    code: [
-      "eval(prompt('enter code'))",
-      "document.write(response)",
-      "// trust the user lol",
-    ],
-    lang: "javascript",
-  },
-  {
-    rank: 2,
-    score: "1.8",
-    code: [
-      "if (x == true) { return true; }",
-      "else if (x == false) { return false; }",
-      "else { return !false; }",
-    ],
-    lang: "typescript",
-  },
-  {
-    rank: 3,
-    score: "2.1",
-    code: ["SELECT * FROM users WHERE 1=1", "-- TODO: add authentication"],
-    lang: "sql",
-  },
-];
-
-function LeaderboardRow({
-  rank,
-  score,
-  code,
-  lang,
-}: {
-  rank: number;
-  score: string;
-  code: string[];
-  lang: string;
-}) {
-  return (
-    <div className="flex items-center gap-3 md:gap-6 px-4 md:px-5 py-3 md:py-4 border-b border-border-primary">
-      <div className="w-8 md:w-10 font-mono text-[11px] md:text-[12px] text-text-tertiary">
-        {rank}
-      </div>
-      <div className="w-12 md:w-[70px] font-mono text-[11px] md:text-[12px] font-bold text-accent-red">
-        {score}
-      </div>
-      <div className="flex-1 flex flex-col gap-0.5 overflow-hidden">
-        {code.map((line) => (
-          <span
-            key={line.slice(0, 15)}
-            className="font-mono text-[11px] md:text-[12px] text-text-primary truncate"
-          >
-            {line}
-          </span>
-        ))}
-      </div>
-      <div className="hidden md:block md:w-[100px] font-mono text-[12px] text-text-secondary">
-        {lang}
-      </div>
-    </div>
-  );
-}
 
 export default function Home() {
   const [code, setCode] = useState(sampleCode);
@@ -154,29 +90,9 @@ export default function Home() {
             {"// the worst code on the internet, ranked by shame"}
           </span>
 
-          <div className="border border-border-primary overflow-x-auto">
-            <div className="flex items-center px-4 md:px-5 py-3 bg-bg-surface border-b border-border-primary min-w-[500px]">
-              <div className="w-8 md:w-10 text-[12px] font-mono font-medium text-text-tertiary">
-                #
-              </div>
-              <div className="w-12 md:w-[70px] text-[12px] font-mono font-medium text-text-tertiary">
-                score
-              </div>
-              <div className="flex-1 text-[12px] font-mono font-medium text-text-tertiary">
-                code
-              </div>
-              <div className="hidden md:block md:w-[100px] text-[12px] font-mono font-medium text-text-tertiary">
-                lang
-              </div>
-            </div>
-
-            {leaderboardData.map((item) => (
-              <LeaderboardRow key={item.rank} {...item} />
-            ))}
-          </div>
+          <Leaderboard />
 
           <div className="flex justify-center py-4 text-[12px] font-mono text-text-tertiary">
-            showing top 3 of 2,847 ·{" "}
             <Link
               href="/leaderboard"
               className="hover:text-text-primary transition-colors"

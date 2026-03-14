@@ -1,4 +1,4 @@
-import { avg, count, eq } from "drizzle-orm";
+import { asc, avg, count, eq } from "drizzle-orm";
 import { z } from "zod";
 import { submissions } from "@/db/schema";
 import { baseProcedure, createTRPCRouter } from "../trpc";
@@ -35,6 +35,25 @@ export const appRouter = createTRPCRouter({
           avgScore: Number(avgResult?.avg) ?? 0,
         };
       }),
+  }),
+  leaderboard: createTRPCRouter({
+    getShameTop3: baseProcedure.query(async () => {
+      const { db } = await import("@/db");
+
+      const result = await db
+        .select({
+          id: submissions.id,
+          code: submissions.code,
+          language: submissions.language,
+          score: submissions.score,
+        })
+        .from(submissions)
+        .where(eq(submissions.status, "completed"))
+        .orderBy(asc(submissions.score))
+        .limit(3);
+
+      return result;
+    }),
   }),
 });
 
