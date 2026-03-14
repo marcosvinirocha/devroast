@@ -83,15 +83,6 @@ export default function Home() {
           </span>
 
           <Leaderboard />
-
-          <div className="flex justify-center py-4 text-[12px] font-mono text-text-tertiary">
-            <Link
-              href="/leaderboard"
-              className="hover:text-text-primary transition-colors"
-            >
-              view full leaderboard &gt;&gt;
-            </Link>
-          </div>
         </section>
 
         <section className="h-10 md:h-[60px]" />
